@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build:
+      context: ./simple_frontend
+      dockerfile: Dockerfile
+    container_name: simple_frontend_container
+    ports:
+      - "80:80"
+    networks:
+      - web-network
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./simple_backend
+      dockerfile: Dockerfile
+    container_name: simple_backend_container
+    # We don't need to map ports to the host if only Nginx needs to talk to it
+    expose:
+      - "5000"
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: bridge
