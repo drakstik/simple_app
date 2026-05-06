@@ -6,16 +6,19 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
-
-# Stage 2: Runtime
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-# Only install production dependencies (skips typescript, @types, etc)
-RUN npm install --omit=dev
-COPY --from=builder /app/dist ./dist
-
 EXPOSE 5000
+# RUN npm run build #(only for production)
+CMD ["npm", "run", "dev"]
+
+
+# Stage 2: Runtime (only for production)
+#FROM node:20-alpine
+#WORKDIR /app
+#COPY package*.json ./
+# Only install production dependencies (skips typescript, @types, etc)
+#RUN npm install --omit=dev
+#COPY --from=builder /app/dist ./dist
+
+#EXPOSE 5000
 # This command will run when you run the image
-CMD ["node", "dist/index.js"]
+#CMD ["node", "dist/index.js"]

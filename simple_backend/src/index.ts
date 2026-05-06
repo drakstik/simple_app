@@ -10,7 +10,7 @@ const PORT = 5000;
 app.use(express.json());
 
 app.get("/api/hello_backend", (req, res) => {
-    res.json({ message: "Hello! This is the backend talking!" });
+    res.json({ message: "Hello! Testing 2 This is the backend talking!" });
 });
 
 // Start Express listener server
