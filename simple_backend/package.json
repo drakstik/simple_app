@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon -L --exec node --loader ts-node/esm src/index.ts"
+    "dev": "nodemon -L --exec npx tsx src/index.ts"
   },
   "type": "module",
   "keywords": [],
@@ -21,7 +21,8 @@
     "mysql2": "^3.22.3",
     "pg": "^8.20.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "sequelize-cli": "^6.6.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
