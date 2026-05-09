@@ -2,6 +2,17 @@
 'use strict';
 import { Model } from 'sequelize';
 
+/**
+ * @typedef {Object} UserAttributes
+ * @property {string} id
+ * @property {string|null} username
+ * @property {string|null} profilePicture
+ */
+
+
+/**
+ * @extends {Model<UserAttributes>}
+ */
 export class User extends Model {
   /**
    * Helper method for defining associations.
@@ -20,6 +31,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    profilePicture: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     sequelize,

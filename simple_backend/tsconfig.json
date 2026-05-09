@@ -1,6 +1,9 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
+    // Allow .js files for sequelize migrations
+    "allowJs": true,
+    "checkJs": false,
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
@@ -39,5 +42,10 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "eslint.config.mjs", // must exclude this so we can allowJS files to be treated normally
+    "dist"
+  ],
 }
