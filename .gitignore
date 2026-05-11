@@ -1,1 +1,3 @@
-node_modules/
+./simple_frontend/node_modules/
+./simple_backend/node_modules/
+./node_modules/
