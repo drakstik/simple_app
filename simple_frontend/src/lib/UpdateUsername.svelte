@@ -26,6 +26,7 @@
                 // Clear inputs
                 userId = "";
                 newUsername = "";
+                return alert("Successfully updated your username! ");
             } else {
                 message = `Error: ${data.message || "Failed to update"}`;
             }

@@ -1,8 +1,11 @@
-import express from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
 import dotenv from "dotenv";
 import { Sequelize, DataTypes } from "sequelize";
+import rateLimit from 'express-rate-limit';
+import { body, validationResult } from 'express-validator';
 // eslint-disable-next-line n/no-missing-import
 import initUserModel, { User } from "./models/user.js";
+
 
 dotenv.config();
 
@@ -32,57 +35,53 @@ initUserModel(sequelize, DataTypes);
 // data may be dropped. To rename tables and other complex model changes, use migration files. 
 await sequelize.sync({ alter: true });
 
-app.get("/api/hello_backend", (req, res) => {
-    res.json({ message: "Hello! Testing 2 This is the backend talking!" });
-});
+/*------------User registration and login logic-------------*/
 
-// New User endpoint
-app.post("/api/newUser", async (req, res) => {
+export const validateRegistration = [
+    body('password')
+        .isStrongPassword({
+            minLength: 12,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1,
+        })
+        .withMessage('Password must be at least 12 chars long...'),
+
+    // Explicitly type the req, res, and next parameters
+    (req: Request, res: Response, next: NextFunction) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        next();
+    }
+];
+
+// User registration endpoint
+app.post("/api/register", validateRegistration, async (req: Request, res: Response) => {
     try {
-        const newUser = await User.create();
+        // Extract data from req.body
+        const { username, password } = req.body;
+        const newUser = await User.create({ username, password });
         res.status(201).json({
-            success: true,
-            user: newUser
-        });
+            username: newUser.get('username')
+        })
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to create user" });
+        res.status(500).json({ error: "Failed to register user" });
     }
 });
 
-app.post("/api/updateUsername", async (req, res) => {
-    const { id } = req.body;
-    const { username } = req.body;
-    try {
-        // 1. Find the user by their Primary Key (UUID)
-        const user = await User.findByPk(id) as (User & { username: string | null });
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
-        }
-
-        // 2. Update the field
-        user.username = username;
-
-        // 3. Persist changes to the database
-        await user.save();
-
-        res.json({
-            success: true,
-            message: "Username updated successfully to ",
-            user: user
-        });
-    } catch (error) {
-        console.error("Update Error!:", error);
-        res.status(500).json({
-            success: false,
-            error: "Failed to update user"
-        });
-    }
+// Rate limiting for login attempts
+export const loginLimiter = rateLimit({
+    windowMs: 2 * 60 * 1000, // 2 minutes
+    max: 5, // Limit each IP to 5 failed login attempts per window
+    message: 'Too many login attempts from this IP, please try again after 2 minutes',
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false,  // Disable the `X-RateLimit-*` headers
 });
+
 
 // Start Express listener server
 app.listen(PORT, "0.0.0.0", () => {
