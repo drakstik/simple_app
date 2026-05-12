@@ -14,8 +14,11 @@ FROM nginx:stable-alpine
 COPY --from=builder /app/dist/. /usr/share/nginx/html/
 
 # Copy our custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
+# Ensure cert directory exists (docker-compose will mount into this)
+RUN mkdir -p /etc/nginx/certs
+
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]

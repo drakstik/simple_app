@@ -20,11 +20,15 @@ services:
     container_name: simple_frontend_container
     # restart: always
     ports:
-      - "80:80"
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
     networks:
       - app-network
     depends_on:
       - backend
+    volumes:
+      - ./self-signed-ssl/cert.pem:/etc/nginx/certs/default.crt:ro
+      - ./self-signed-ssl/key.pem:/etc/nginx/certs/default.key:ro
 
   backend:
     build:
